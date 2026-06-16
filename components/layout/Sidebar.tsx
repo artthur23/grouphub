@@ -40,7 +40,13 @@ export function Sidebar({ selected, onSelect, collapsed, onToggle }: Props) {
         }`}
       >
         <div className="flex items-center gap-3 overflow-hidden min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center shrink-0 shadow-[0_0_14px_rgba(34,197,94,0.35)]">
+          <div
+            onClick={collapsed ? onToggle : undefined}
+            title={collapsed ? "Expandir" : undefined}
+            className={`w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center shrink-0 shadow-[0_0_14px_rgba(34,197,94,0.35)] ${
+              collapsed ? "cursor-pointer hover:brightness-110 transition-all" : ""
+            }`}
+          >
             <span className="text-white font-bold text-sm select-none">G</span>
           </div>
           <AnimatePresence initial={false}>
