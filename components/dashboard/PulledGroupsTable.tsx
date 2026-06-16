@@ -188,6 +188,7 @@ export function PulledGroupsTable() {
           <table className="min-w-full text-sm divide-y divide-gray-200">
             <thead className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
               <tr>
+                <th className="px-4 py-3 text-left">Grupo</th>
                 <th className="px-4 py-3 text-left">Link do grupo</th>
                 <th className="px-4 py-3 text-left">Lista</th>
                 <th className="px-4 py-3 text-left">Fonte</th>
@@ -200,6 +201,9 @@ export function PulledGroupsTable() {
             <tbody className="bg-white divide-y divide-gray-100">
               {groups.map((g) => (
                 <tr key={g.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 max-w-[160px] truncate text-gray-800" title={g.group_name ?? undefined}>
+                    {g.group_name ?? <span className="text-gray-400 italic">—</span>}
+                  </td>
                   <td className="px-4 py-3 max-w-xs">
                     <a
                       href={g.group_link}

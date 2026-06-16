@@ -42,12 +42,13 @@ export async function POST(req: NextRequest) {
 
       const results = await Promise.allSettled(
         chunk.map(async (group) => {
-          const { status, errorMessage } = await checkGroupLinkStatus(group.group_link);
+          const { status, groupName, errorMessage } = await checkGroupLinkStatus(group.group_link);
 
           await supabase
             .from("pulled_groups")
             .update({
               status,
+              group_name: groupName,
               error_message: errorMessage,
               last_checked_at: now,
             })

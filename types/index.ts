@@ -33,6 +33,7 @@ export interface PulledGroup {
   status: GroupStatus;
   error_message: string | null;
   raw_payload: Record<string, unknown> | null;
+  group_name: string | null;
   last_checked_at: string | null;
   created_at: string;
   updated_at: string;

@@ -15,8 +15,27 @@ import { sanitizeErrorMessage, BROWSER_USER_AGENT } from "@/lib/parsing";
 
 const OG_TITLE_PATTERN = /<meta\s+property="og:title"\s+content="([^"]*)"/i;
 
+const HTML_ENTITIES: Record<string, string> = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  "#039": "'",
+  apos: "'",
+};
+
+/** Decodifica entidades HTML básicas (numéricas e nomeadas) de um og:title */
+function decodeHtmlEntities(raw: string): string {
+  return raw.replace(/&(#x[0-9a-fA-F]+|#\d+|[a-zA-Z0-9]+);/g, (match, code) => {
+    if (code.startsWith("#x")) return String.fromCodePoint(parseInt(code.slice(2), 16));
+    if (code.startsWith("#")) return String.fromCodePoint(parseInt(code.slice(1), 10));
+    return HTML_ENTITIES[code] ?? match;
+  });
+}
+
 export interface GroupLinkCheckResult {
   status: GroupStatus;
+  groupName: string | null;
   errorMessage: string | null;
 }
 
@@ -28,11 +47,15 @@ export async function checkGroupLinkStatus(groupLink: string): Promise<GroupLink
     });
 
     if (response.status === 404) {
-      return { status: "invalid", errorMessage: null };
+      return { status: "invalid", groupName: null, errorMessage: null };
     }
 
     if (!response.ok) {
-      return { status: "error", errorMessage: `A página retornou HTTP ${response.status}` };
+      return {
+        status: "error",
+        groupName: null,
+        errorMessage: `A página retornou HTTP ${response.status}`,
+      };
     }
 
     const html = await response.text();
@@ -40,15 +63,21 @@ export async function checkGroupLinkStatus(groupLink: string): Promise<GroupLink
 
     if (!match) {
       // Não achou a meta tag esperada — página mudou de formato, tratar como erro transitório
-      return { status: "error", errorMessage: "Meta tag og:title não encontrada na página de convite" };
+      return {
+        status: "error",
+        groupName: null,
+        errorMessage: "Meta tag og:title não encontrada na página de convite",
+      };
     }
 
-    if (match[1].trim() === "") {
-      return { status: "invalid", errorMessage: null };
+    const title = decodeHtmlEntities(match[1]).trim();
+
+    if (title === "") {
+      return { status: "invalid", groupName: null, errorMessage: null };
     }
 
-    return { status: "active", errorMessage: null };
+    return { status: "active", groupName: title, errorMessage: null };
   } catch (err) {
-    return { status: "error", errorMessage: sanitizeErrorMessage(err) };
+    return { status: "error", groupName: null, errorMessage: sanitizeErrorMessage(err) };
   }
 }

@@ -20,6 +20,7 @@ export function ExportCsvButton({ data, filename = "grupos.csv", onFetchAll }: P
       if (rows.length === 0) return;
 
       const headers = [
+        "Nome do Grupo",
         "Link do Grupo",
         "Nome da Lista",
         "Fonte",
@@ -29,6 +30,7 @@ export function ExportCsvButton({ data, filename = "grupos.csv", onFetchAll }: P
       ];
 
       const csvRows = rows.map((g) => [
+        g.group_name ?? "",
         g.group_link,
         g.list_name,
         g.source_type,

@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/server";
 import { fetchGroupsBySourceType } from "@/lib/adapters";
 import { deduplicateGroups, sanitizeErrorMessage } from "@/lib/parsing";
+import { checkGroupLinkStatus } from "@/lib/validation";
 import type { MonitoredSource, ExtractionResult } from "@/types";
 
 // ============================================================
@@ -44,8 +45,10 @@ export async function runExtraction(source: MonitoredSource): Promise<Extraction
     result.found = unique.length;
     rawResponse = { groups_found: unique.length, sample: unique.slice(0, 3) };
 
-    // 3. Inserir cada grupo (ignorar duplicatas via ON CONFLICT DO NOTHING)
+    // 3. Validar e inserir cada grupo (ignorar duplicatas via ON CONFLICT DO NOTHING)
     for (const group of unique) {
+      const check = await checkGroupLinkStatus(group.groupLink);
+
       const { error: insertError } = await supabase.from("pulled_groups").insert({
         monitored_source_id: source.id,
         group_link: group.groupLink,
@@ -53,8 +56,11 @@ export async function runExtraction(source: MonitoredSource): Promise<Extraction
         source_type: source.source_type,
         group_hash: group.groupHash,
         pulled_at: now,
-        status: "active",
+        status: check.status,
+        group_name: check.groupName,
+        error_message: check.errorMessage,
         raw_payload: group.rawPayload,
+        last_checked_at: now,
       });
 
       if (insertError) {

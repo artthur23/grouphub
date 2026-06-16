@@ -59,6 +59,7 @@ create table pulled_groups (
   status                group_status not null default 'active',
   error_message         text,
   raw_payload           jsonb,
+  group_name            text,
   last_checked_at       timestamptz,
   created_at            timestamptz not null default now(),
   updated_at            timestamptz not null default now(),
@@ -81,8 +82,9 @@ create index idx_pulled_groups_pulled_at on pulled_groups(pulled_at desc);
 create index idx_pulled_groups_status on pulled_groups(status);
 create index idx_pulled_groups_last_checked_at on pulled_groups(last_checked_at);
 
--- Para bancos já criados antes da coluna last_checked_at existir, rode:
+-- Para bancos já criados antes das colunas group_name/last_checked_at existirem, rode:
 -- alter table pulled_groups add column if not exists last_checked_at timestamptz;
+-- alter table pulled_groups add column if not exists group_name text;
 -- create index if not exists idx_pulled_groups_last_checked_at on pulled_groups(last_checked_at);
 
 -- ============================================================
