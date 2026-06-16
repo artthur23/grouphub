@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Search, Loader2, AlertCircle, Filter } from "lucide-react";
+import { Search, Loader2, AlertCircle, Filter, Trash2 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { ExportCsvButton } from "@/components/ui/ExportCsvButton";
@@ -24,6 +24,7 @@ export function PulledGroupsTable() {
   const [filterStatus, setFilterStatus] = useState<GroupStatus | "">("");
   const [filterDateFrom, setFilterDateFrom] = useState("");
   const [filterDateTo, setFilterDateTo] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const PER_PAGE = 50;
 
@@ -64,6 +65,18 @@ export function PulledGroupsTable() {
       setDebouncedSearchName(value);
       setPage(1);
     }, 300);
+  }
+
+  async function handleDelete(id: string) {
+    if (!window.confirm("Excluir este grupo da lista? Esta ação não pode ser desfeita.")) return;
+    setDeletingId(id);
+    try {
+      await fetch(`/api/pulled-groups/${id}`, { method: "DELETE" });
+      setGroups((prev) => prev.filter((g) => g.id !== id));
+      setTotal((prev) => prev - 1);
+    } finally {
+      setDeletingId(null);
+    }
   }
 
   async function fetchAllForExport(): Promise<PulledGroup[]> {
@@ -232,7 +245,21 @@ export function PulledGroupsTable() {
                     <StatusBadge status={g.status} />
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <CopyButton text={g.group_link} />
+                    <div className="inline-flex items-center gap-1.5">
+                      <CopyButton text={g.group_link} />
+                      <button
+                        onClick={() => handleDelete(g.id)}
+                        disabled={deletingId === g.id}
+                        title="Excluir"
+                        className="inline-flex items-center justify-center p-1.5 rounded bg-red-100 hover:bg-red-200 text-red-700 disabled:opacity-50"
+                      >
+                        {deletingId === g.id ? (
+                          <Loader2 size={12} className="animate-spin" />
+                        ) : (
+                          <Trash2 size={12} />
+                        )}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
