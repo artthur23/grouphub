@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/process-sources",
+      "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/api/cron/validate-groups",
+      "schedule": "0 * * * *"
+    }
+  ]
+}
