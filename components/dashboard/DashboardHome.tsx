@@ -124,9 +124,9 @@ export function DashboardHome({ onNavigate }: { onNavigate: (id: NavId) => void 
       </div>
 
       {/* Gráfico + Monitoramentos Recentes */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Bar chart */}
-        <div className="bg-surface-card rounded-xl border border-white/[0.08] p-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Bar chart — 2/3 */}
+        <div className="lg:col-span-2 bg-surface-card rounded-xl border border-white/[0.08] p-5">
           <div className="flex items-center gap-2.5 mb-5">
             <div className="p-1.5 rounded-md bg-brand-500/10 ring-1 ring-brand-500/20">
               <BarChart2 size={14} className="text-brand-500" />
@@ -136,12 +136,12 @@ export function DashboardHome({ onNavigate }: { onNavigate: (id: NavId) => void 
               <p className="text-[11px] text-ink-muted mt-0.5">Total coletado por fonte ativa</p>
             </div>
           </div>
-          <div className="h-48">
+          <div className="h-56">
             <GroupsChart data={chartData} />
           </div>
         </div>
 
-        {/* Monitoramentos recentes */}
+        {/* Monitoramentos recentes — 1/3 */}
         <div className="bg-surface-card rounded-xl border border-white/[0.08] p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
