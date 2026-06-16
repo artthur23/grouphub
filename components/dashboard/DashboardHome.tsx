@@ -1,14 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { format } from "date-fns";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { format, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Radio, Users, CheckCircle2, XCircle, Loader2, AlertCircle, BarChart2 } from "lucide-react";
-import { motion } from "framer-motion";
+import {
+  Radio, Users, CheckCircle2, XCircle, Loader2, AlertCircle, BarChart2,
+  RefreshCw, Bell, User, LogOut, BellOff, Calendar,
+} from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { StatsCard } from "@/components/ui/StatsCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { GroupsChart } from "@/components/ui/GroupsChart";
 import { SOURCE_LABELS } from "@/components/ui/SourceTypeSelect";
+import { createClient } from "@/lib/supabase/client";
 import type { NavId } from "@/components/layout/Sidebar";
 import type { SourceType, MonitoringStatus, GroupStatus } from "@/types";
 
@@ -30,6 +34,49 @@ interface DashboardStats {
     status: GroupStatus;
     pulled_at: string;
   }[];
+}
+
+type DatePreset = "today" | "yesterday" | "7days" | "30days" | "all";
+
+const DATE_PRESETS: { id: DatePreset; label: string }[] = [
+  { id: "today",     label: "Hoje"    },
+  { id: "yesterday", label: "Ontem"   },
+  { id: "7days",     label: "7 dias"  },
+  { id: "30days",    label: "30 dias" },
+  { id: "all",       label: "Tudo"    },
+];
+
+function getPresetDates(preset: DatePreset) {
+  const now = new Date();
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+  switch (preset) {
+    case "today":
+      return { from: today, to: now };
+    case "yesterday": {
+      const from = subDays(today, 1);
+      const to = new Date(from);
+      to.setHours(23, 59, 59, 999);
+      return { from, to };
+    }
+    case "7days":
+      return { from: subDays(today, 6), to: now };
+    case "30days":
+      return { from: subDays(today, 29), to: now };
+    case "all":
+      return { from: new Date(2020, 0, 1), to: now };
+  }
+}
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Bom dia";
+  if (h < 18) return "Boa tarde";
+  return "Boa noite";
+}
+
+function formatDateDisplay(d: Date) {
+  return format(d, "dd/MM/yyyy", { locale: ptBR });
 }
 
 function formatDate(iso: string | null) {
@@ -68,21 +115,60 @@ const STAT_CARDS = (stats: DashboardStats) => [
   },
 ];
 
+const HERO_BTN =
+  "w-9 h-9 rounded-xl bg-surface-secondary border border-white/[0.08] flex items-center justify-center text-ink-secondary hover:text-ink-primary hover:border-white/[0.14] hover:bg-white/[0.04] transition-all relative";
+
+const dropdownBase =
+  "absolute right-0 top-full mt-2 z-50 bg-surface-card border border-white/[0.10] rounded-xl shadow-2xl shadow-black/60 overflow-hidden";
+
 export function DashboardHome({ onNavigate }: { onNavigate: (id: NavId) => void }) {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [stats, setStats]           = useState<DashboardStats | null>(null);
+  const [loading, setLoading]       = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError]           = useState<string | null>(null);
+  const [datePreset, setDatePreset] = useState<DatePreset>("today");
+  const [dates, setDates]           = useState(() => getPresetDates("today"));
+  const [heroDropdown, setHeroDropdown] = useState<"bell" | "profile" | null>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch("/api/dashboard-stats")
-      .then(async (res) => {
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error ?? "Falha ao carregar painel");
-        setStats(json);
-      })
-      .catch((err) => setError(err instanceof Error ? err.message : "Erro desconhecido"))
-      .finally(() => setLoading(false));
+    function handle(e: MouseEvent) {
+      if (heroRef.current && !heroRef.current.contains(e.target as Node)) {
+        setHeroDropdown(null);
+      }
+    }
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
   }, []);
+
+  const fetchStats = useCallback(async (isRefresh = false) => {
+    if (isRefresh) setRefreshing(true);
+    else { setLoading(true); setError(null); }
+    try {
+      const res = await fetch("/api/dashboard-stats");
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Falha ao carregar painel");
+      setStats(json);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchStats(); }, [fetchStats]);
+
+  function handlePresetChange(preset: DatePreset) {
+    setDatePreset(preset);
+    setDates(getPresetDates(preset));
+  }
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  }
 
   if (loading) {
     return (
@@ -109,7 +195,156 @@ export function DashboardHome({ onNavigate }: { onNavigate: (id: NavId) => void 
 
   return (
     <div className="space-y-5">
-      {/* Stats grid com stagger */}
+
+      {/* ── Hero Header ── */}
+      <div className="relative bg-surface-card rounded-xl border border-white/[0.08] overflow-hidden">
+        {/* Linha dourada no topo */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
+
+        <div className="px-8 pt-8 pb-7">
+          <div className="flex items-start justify-between gap-4">
+
+            {/* Título + saudação */}
+            <div>
+              <h1 className="text-2xl font-bold text-ink-primary tracking-tight">Visão Geral</h1>
+              <p className="text-[13px] text-ink-secondary mt-1.5">
+                {getGreeting()}, Arthur · Última corrida do dia.
+              </p>
+              <div className="flex items-center gap-2 mt-2.5">
+                <span className="text-[11px] text-ink-muted">Você está visualizando dados da conta</span>
+                <span className="inline-flex items-center gap-1.5 bg-white/[0.05] border border-white/[0.08] text-ink-secondary text-[11px] px-2.5 py-0.5 rounded-full">
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-500 inline-block" />
+                  Principal
+                </span>
+              </div>
+            </div>
+
+            {/* Botões de ação */}
+            <div ref={heroRef} className="flex items-center gap-2 shrink-0 mt-0.5">
+              {/* Atualizar */}
+              <button
+                onClick={() => fetchStats(true)}
+                title="Atualizar dados"
+                className={HERO_BTN}
+              >
+                <RefreshCw size={15} className={refreshing ? "animate-spin text-brand-500" : ""} />
+              </button>
+
+              {/* Notificações */}
+              <div className="relative">
+                <button
+                  onClick={() => setHeroDropdown((p) => (p === "bell" ? null : "bell"))}
+                  title="Notificações"
+                  className={`${HERO_BTN} ${heroDropdown === "bell" ? "border-white/[0.18] bg-white/[0.06]" : ""}`}
+                >
+                  <Bell size={15} />
+                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-brand-500" />
+                </button>
+                <AnimatePresence>
+                  {heroDropdown === "bell" && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                      transition={{ duration: 0.15 }}
+                      className={`${dropdownBase} w-72`}
+                    >
+                      <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between">
+                        <span className="text-xs font-semibold text-ink-primary">Notificações</span>
+                        <span className="text-[10px] text-ink-muted bg-white/[0.04] px-1.5 py-0.5 rounded-full">0 novas</span>
+                      </div>
+                      <div className="flex flex-col items-center justify-center py-8 gap-2 text-ink-muted">
+                        <BellOff size={22} className="opacity-25" />
+                        <p className="text-xs">Nenhuma notificação ainda</p>
+                      </div>
+                      <div className="px-4 py-2.5 border-t border-white/[0.06]">
+                        <p className="text-[10px] text-ink-muted text-center">
+                          Alertas de grupos e monitoramentos aparecerão aqui
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Perfil */}
+              <div className="relative">
+                <button
+                  onClick={() => setHeroDropdown((p) => (p === "profile" ? null : "profile"))}
+                  title="Perfil"
+                  className={`${HERO_BTN} bg-brand-500/10 border-brand-500/20 hover:border-brand-500/40 ${
+                    heroDropdown === "profile" ? "border-brand-500/40" : ""
+                  }`}
+                >
+                  <User size={15} className="text-brand-500" />
+                </button>
+                <AnimatePresence>
+                  {heroDropdown === "profile" && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                      transition={{ duration: 0.15 }}
+                      className={`${dropdownBase} w-56`}
+                    >
+                      <div className="px-4 py-3.5 border-b border-white/[0.06]">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-brand-500/15 border border-brand-500/25 flex items-center justify-center shrink-0">
+                            <User size={16} className="text-brand-500" />
+                          </div>
+                          <div className="overflow-hidden">
+                            <div className="text-xs font-semibold text-ink-primary truncate">Minha conta</div>
+                            <div className="text-[10px] text-ink-muted truncate">GroupHub</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-1.5">
+                        <button
+                          onClick={handleSignOut}
+                          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+                        >
+                          <LogOut size={14} className="shrink-0" />
+                          Sair
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+          </div>
+
+          {/* Filtro de datas */}
+          <div className="flex items-center gap-3 mt-6 flex-wrap">
+            {/* Exibição do intervalo */}
+            <div className="flex items-center gap-2.5 bg-surface-secondary border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm">
+              <Calendar size={13} className="text-ink-muted shrink-0" />
+              <span className="text-ink-primary whitespace-nowrap">{formatDateDisplay(dates.from)}</span>
+              <span className="text-ink-muted mx-0.5">-</span>
+              <span className="text-ink-primary whitespace-nowrap">{formatDateDisplay(dates.to)}</span>
+            </div>
+
+            {/* Botões de preset */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {DATE_PRESETS.map(({ id, label }) => (
+                <button
+                  key={id}
+                  onClick={() => handlePresetChange(id)}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                    datePreset === id
+                      ? "bg-blue-600 text-white shadow-[0_0_12px_rgba(37,99,235,0.25)]"
+                      : "bg-surface-secondary border border-white/[0.08] text-ink-secondary hover:text-ink-primary hover:border-white/[0.14]"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Cards de métricas ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {STAT_CARDS(stats).map((card, i) => (
           <motion.div
@@ -123,7 +358,7 @@ export function DashboardHome({ onNavigate }: { onNavigate: (id: NavId) => void 
         ))}
       </div>
 
-      {/* Gráfico + Monitoramentos Recentes */}
+      {/* ── Gráfico + Monitoramentos Recentes ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Bar chart — 2/3 */}
         <div className="lg:col-span-2 bg-surface-card rounded-xl border border-white/[0.08] p-5">
@@ -200,7 +435,7 @@ export function DashboardHome({ onNavigate }: { onNavigate: (id: NavId) => void 
         </div>
       </div>
 
-      {/* Grupos recentes */}
+      {/* ── Grupos Recentes ── */}
       <div className="bg-surface-card rounded-xl border border-white/[0.08] p-5">
         <div className="flex items-center justify-between mb-4">
           <div>

@@ -123,7 +123,8 @@ export function DashboardPage() {
 
       <div className="flex-1 flex flex-col overflow-hidden min-w-0 relative">
 
-        {/* Ícones flutuantes — top right */}
+        {/* Ícones flutuantes — ocultos no painel (DashboardHome tem seu próprio header) */}
+        {selected !== "painel" && (
         <div
           ref={floatRef}
           className="absolute top-5 right-5 z-40 flex items-center gap-2"
@@ -269,14 +270,17 @@ export function DashboardPage() {
             </AnimatePresence>
           </div>
         </div>
+        )}
 
         {/* Conteúdo principal */}
         <main className="flex-1 overflow-y-auto p-6">
-          {/* Título da página */}
-          <div className="mb-6 pr-40">
-            <h1 className="text-xl font-bold text-ink-primary">{meta.title}</h1>
-            <p className="text-sm text-ink-muted mt-0.5">{meta.subtitle}</p>
-          </div>
+          {/* Título da página — oculto no painel (hero header já tem título) */}
+          {selected !== "painel" && (
+            <div className="mb-6 pr-40">
+              <h1 className="text-xl font-bold text-ink-primary">{meta.title}</h1>
+              <p className="text-sm text-ink-muted mt-0.5">{meta.subtitle}</p>
+            </div>
+          )}
 
           <AnimatePresence mode="wait">
             <motion.div
