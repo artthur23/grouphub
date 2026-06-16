@@ -4,10 +4,10 @@
 
 @layer base {
   :root {
-    --surface-base:      #050607;
-    --surface-card:      #0B0D10;
-    --surface-secondary: #111318;
-    --surface-hover:     #151A22;
+    --surface-base:      #111115;
+    --surface-card:      #1A1A1F;
+    --surface-secondary: #1E1E25;
+    --surface-hover:     #232329;
 
     --brand:       #22C55E;
     --brand-hover: #16A34A;
@@ -29,9 +29,10 @@
   body {
     background-color: var(--surface-base);
     background-image:
-      linear-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+      linear-gradient(rgba(255, 255, 255, 0.80) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.80) 1px, transparent 1px);
     background-size: 40px 40px;
+    background-position: center center;
     background-attachment: fixed;
     color: var(--ink-primary);
   }
@@ -68,8 +69,9 @@
 @layer utilities {
   .bg-grid {
     background-image:
-      linear-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+      linear-gradient(rgba(255, 255, 255, 0.80) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.80) 1px, transparent 1px);
     background-size: 40px 40px;
+    background-position: center center;
   }
 }
