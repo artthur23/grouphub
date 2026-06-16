@@ -33,16 +33,34 @@ export function Sidebar({ selected, onSelect, collapsed, onToggle }: Props) {
       }`}
     >
       {/* Brand */}
-      <div className={`flex items-center gap-3 px-4 py-5 border-b border-gray-100 dark:border-gray-800 ${collapsed ? "justify-center" : ""}`}>
-        <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center shrink-0">
-          <span className="text-white font-bold text-sm">G</span>
-        </div>
-        {!collapsed && (
-          <div className="overflow-hidden">
-            <div className="font-bold text-gray-900 dark:text-white text-sm leading-tight">GroupHub</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Monitor de grupos</div>
+      <div
+        className={`flex px-4 py-5 border-b border-gray-100 dark:border-gray-800 ${
+          collapsed ? "flex-col items-center gap-3" : "flex-row items-center justify-between"
+        }`}
+      >
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center shrink-0">
+            <span className="text-white font-bold text-sm">G</span>
           </div>
-        )}
+          {!collapsed && (
+            <div className="overflow-hidden">
+              <div className="font-bold text-gray-900 dark:text-white text-sm leading-tight">GroupHub</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">Monitor de grupos</div>
+            </div>
+          )}
+        </div>
+
+        <button
+          onClick={onToggle}
+          title={collapsed ? "Expandir" : "Recolher"}
+          className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center shrink-0 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        >
+          {collapsed ? (
+            <ChevronRight size={12} className="text-gray-600 dark:text-gray-400" />
+          ) : (
+            <ChevronLeft size={12} className="text-gray-600 dark:text-gray-400" />
+          )}
+        </button>
       </div>
 
       {/* Nav items */}
@@ -71,18 +89,6 @@ export function Sidebar({ selected, onSelect, collapsed, onToggle }: Props) {
           );
         })}
       </nav>
-
-      {/* Collapse toggle */}
-      <button
-        onClick={onToggle}
-        className="absolute -right-3 top-[72px] w-6 h-6 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors z-10"
-      >
-        {collapsed ? (
-          <ChevronRight size={12} className="text-gray-600 dark:text-gray-400" />
-        ) : (
-          <ChevronLeft size={12} className="text-gray-600 dark:text-gray-400" />
-        )}
-      </button>
     </aside>
   );
 }
