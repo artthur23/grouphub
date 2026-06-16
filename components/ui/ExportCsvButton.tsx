@@ -61,7 +61,7 @@ export function ExportCsvButton({ data, filename = "grupos.csv", onFetchAll }: P
     <button
       onClick={handleExport}
       disabled={exporting || isEmpty}
-      className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
     >
       {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
       {exporting

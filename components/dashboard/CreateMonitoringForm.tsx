@@ -73,8 +73,8 @@ export function CreateMonitoringForm({ onSuccess }: Props) {
         <div
           className={`flex items-start gap-3 rounded-lg px-4 py-3 text-sm ${
             feedback.type === "success"
-              ? "bg-green-50 border border-green-200 text-green-800"
-              : "bg-red-50 border border-red-200 text-red-800"
+              ? "bg-green-50 border border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400"
+              : "bg-red-50 border border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400"
           }`}
         >
           {feedback.type === "success" ? (
@@ -88,7 +88,7 @@ export function CreateMonitoringForm({ onSuccess }: Props) {
 
       {/* Link de origem */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Link de origem <span className="text-red-500">*</span>
         </label>
         <input
@@ -98,13 +98,13 @@ export function CreateMonitoringForm({ onSuccess }: Props) {
           placeholder="https://sendflow.com/exemplo/lista123"
           required
           disabled={loading}
-          className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 disabled:bg-gray-50"
+          className="block w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 disabled:bg-gray-50 dark:disabled:bg-gray-900 placeholder:text-gray-400 dark:placeholder:text-gray-500"
         />
       </div>
 
       {/* Nome da lista/campanha */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Nome da lista / campanha <span className="text-red-500">*</span>
         </label>
         <input
@@ -114,14 +114,14 @@ export function CreateMonitoringForm({ onSuccess }: Props) {
           placeholder="Leads-SEMANADOCROCHE"
           required
           disabled={loading}
-          className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 disabled:bg-gray-50"
+          className="block w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 disabled:bg-gray-50 dark:disabled:bg-gray-900 placeholder:text-gray-400 dark:placeholder:text-gray-500"
         />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Fonte */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Fonte <span className="text-red-500">*</span>
           </label>
           <SourceTypeSelect
@@ -133,7 +133,7 @@ export function CreateMonitoringForm({ onSuccess }: Props) {
 
         {/* Frequência */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Frequência de consulta <span className="text-red-500">*</span>
           </label>
           <IntervalSelect

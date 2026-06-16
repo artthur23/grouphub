@@ -21,7 +21,7 @@ export function SourceTypeSelect({ value, onChange, disabled }: Props) {
       value={value}
       onChange={(e) => onChange(e.target.value as SourceType)}
       disabled={disabled}
-      className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:ring-green-500 disabled:bg-gray-50 disabled:text-gray-500"
+      className="block w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:ring-green-500 disabled:bg-gray-50 dark:disabled:bg-gray-900 disabled:text-gray-500"
     >
       {Object.entries(SOURCE_LABELS).map(([val, label]) => (
         <option key={val} value={val}>{label}</option>

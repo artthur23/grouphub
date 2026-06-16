@@ -38,13 +38,13 @@ export function RunNowButton({ sourceId, onSuccess }: Props) {
         onClick={handleRun}
         disabled={loading}
         title="Executar agora"
-        className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded bg-blue-100 hover:bg-blue-200 text-blue-800 transition-colors disabled:opacity-50"
+        className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded bg-blue-100 hover:bg-blue-200 text-blue-800 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 transition-colors disabled:opacity-50"
       >
         {loading ? <Loader2 size={12} className="animate-spin" /> : <Play size={12} />}
         {loading ? "Executando..." : "Executar agora"}
       </button>
       {message && (
-        <div className="absolute left-0 top-full mt-1 z-10 whitespace-nowrap text-xs bg-white border border-gray-200 rounded shadow px-2 py-1">
+        <div className="absolute left-0 top-full mt-1 z-10 whitespace-nowrap text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded shadow px-2 py-1">
           {message}
         </div>
       )}
