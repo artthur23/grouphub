@@ -3,6 +3,7 @@ import {
   extractWhatsAppLinksFromText,
   extractGroupHash,
   deduplicateGroups,
+  BROWSER_USER_AGENT,
 } from "@/lib/parsing";
 
 // ============================================================
@@ -41,7 +42,7 @@ export async function fetchGroupsFromDevzapp(
 
   // Fallback atual: scraping da URL pública
   const response = await fetch(sourceUrl, {
-    headers: { "User-Agent": "GroupHub-Bot/1.0" },
+    headers: { "User-Agent": BROWSER_USER_AGENT },
     signal: AbortSignal.timeout(15_000),
   });
 

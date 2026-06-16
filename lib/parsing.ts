@@ -2,6 +2,12 @@
 // Funções de parsing e normalização de links de grupos WhatsApp
 // ============================================================
 
+// Várias fontes (ex.: sendflow) detectam User-Agent de bot e servem
+// links decoy/inválidos como proteção anti-scraping. Usar um UA de
+// navegador real evita esse comportamento — confirmado empiricamente.
+export const BROWSER_USER_AGENT =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+
 const WA_GROUP_PATTERN = /https?:\/\/chat\.whatsapp\.com\/([A-Za-z0-9]{20,})/;
 const WA_GROUP_HASH_PATTERN = /([A-Za-z0-9]{20,})/;
 

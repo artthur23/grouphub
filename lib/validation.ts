@@ -1,5 +1,5 @@
 import type { GroupStatus } from "@/types";
-import { sanitizeErrorMessage } from "@/lib/parsing";
+import { sanitizeErrorMessage, BROWSER_USER_AGENT } from "@/lib/parsing";
 
 // ============================================================
 // Revalidação de links de grupo WhatsApp
@@ -23,7 +23,7 @@ export interface GroupLinkCheckResult {
 export async function checkGroupLinkStatus(groupLink: string): Promise<GroupLinkCheckResult> {
   try {
     const response = await fetch(groupLink, {
-      headers: { "User-Agent": "GroupHub-Bot/1.0" },
+      headers: { "User-Agent": BROWSER_USER_AGENT },
       signal: AbortSignal.timeout(15_000),
     });
 

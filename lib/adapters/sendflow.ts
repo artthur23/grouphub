@@ -4,6 +4,7 @@ import {
   extractGroupHash,
   deduplicateGroups,
   sanitizeErrorMessage,
+  BROWSER_USER_AGENT,
 } from "@/lib/parsing";
 
 // ============================================================
@@ -46,7 +47,7 @@ export async function fetchGroupsFromSendflow(
 
   // Fallback atual: extrai links do conteúdo público da URL
   const response = await fetch(sourceUrl, {
-    headers: { "User-Agent": "GroupHub-Bot/1.0" },
+    headers: { "User-Agent": BROWSER_USER_AGENT },
     signal: AbortSignal.timeout(15_000),
   });
 
