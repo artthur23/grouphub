@@ -1,15 +1,16 @@
 "use client";
 
-import { LayoutDashboard, PlusCircle, Radio, Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, PlusCircle, Radio, Users, ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
-export type NavId = "painel" | "create" | "sources" | "groups";
+export type NavId = "painel" | "create" | "sources" | "groups" | "leads";
 
 export const NAV_ITEMS: { id: NavId; label: string; description: string; icon: React.ElementType }[] = [
-  { id: "painel",  label: "Painel",        description: "Visão geral do negócio",        icon: LayoutDashboard },
-  { id: "create",  label: "Cadastrar",     description: "Adicionar novo link de origem", icon: PlusCircle },
-  { id: "sources", label: "Monitoramentos",description: "Fontes ativas e configuração",  icon: Radio },
-  { id: "groups",  label: "Grupos Puxados",description: "Histórico de grupos coletados", icon: Users },
+  { id: "painel",  label: "Painel",         description: "Visão geral do negócio",        icon: LayoutDashboard },
+  { id: "create",  label: "Cadastrar",      description: "Adicionar novo link de origem", icon: PlusCircle },
+  { id: "sources", label: "Monitoramentos", description: "Fontes ativas e configuração",  icon: Radio },
+  { id: "groups",  label: "Grupos Puxados", description: "Histórico de grupos coletados", icon: Users },
+  { id: "leads",   label: "Extrair Leads",  description: "Baixar membros dos grupos",     icon: Download },
 ];
 
 export const PAGE_META: Record<NavId, { title: string; subtitle: string }> = {
@@ -17,6 +18,7 @@ export const PAGE_META: Record<NavId, { title: string; subtitle: string }> = {
   create:  { title: "Cadastrar Monitoramento",   subtitle: "Adicione um novo link de origem para ser monitorado periodicamente." },
   sources: { title: "Monitoramentos Ativos",     subtitle: "Links sendo consultados periodicamente para encontrar novos grupos." },
   groups:  { title: "Grupos Puxados",            subtitle: "Todos os grupos WhatsApp encontrados pelos monitoramentos." },
+  leads:   { title: "Extrair Leads",             subtitle: "Conecte seu WhatsApp e baixe os membros dos grupos monitorados." },
 };
 
 interface Props {

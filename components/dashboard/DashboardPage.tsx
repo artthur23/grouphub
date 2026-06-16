@@ -12,6 +12,7 @@ import { DashboardHome } from "./DashboardHome";
 import { CreateMonitoringForm } from "./CreateMonitoringForm";
 import { MonitoredSourcesTable } from "./MonitoredSourcesTable";
 import { PulledGroupsTable } from "./PulledGroupsTable";
+import { LeadsPage } from "./LeadsPage";
 import { createClient } from "@/lib/supabase/client";
 import type { MonitoredSource, ExtractionResult } from "@/types";
 
@@ -106,6 +107,8 @@ export function DashboardPage() {
             <PulledGroupsTable key={`groups-${refreshKey}`} />
           </div>
         );
+      case "leads":
+        return <LeadsPage />;
     }
   }
 
