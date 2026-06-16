@@ -197,11 +197,7 @@ export function DashboardHome({ onNavigate }: { onNavigate: (id: NavId) => void 
     <div className="space-y-5">
 
       {/* ── Hero Header ── */}
-      <div className="relative bg-surface-card rounded-xl border border-white/[0.08] overflow-hidden">
-        {/* Linha dourada no topo */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
-
-        <div className="px-8 pt-8 pb-7">
+      <div className="pt-2 pb-4">
           <div className="flex items-start justify-between gap-4">
 
             {/* Título + saudação */}
@@ -210,13 +206,6 @@ export function DashboardHome({ onNavigate }: { onNavigate: (id: NavId) => void 
               <p className="text-[13px] text-ink-secondary mt-1.5">
                 {getGreeting()}, Arthur · Última corrida do dia.
               </p>
-              <div className="flex items-center gap-2 mt-2.5">
-                <span className="text-[11px] text-ink-muted">Você está visualizando dados da conta</span>
-                <span className="inline-flex items-center gap-1.5 bg-white/[0.05] border border-white/[0.08] text-ink-secondary text-[11px] px-2.5 py-0.5 rounded-full">
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand-500 inline-block" />
-                  Principal
-                </span>
-              </div>
             </div>
 
             {/* Botões de ação */}
@@ -332,7 +321,7 @@ export function DashboardHome({ onNavigate }: { onNavigate: (id: NavId) => void 
                   onClick={() => handlePresetChange(id)}
                   className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                     datePreset === id
-                      ? "bg-blue-600 text-white shadow-[0_0_12px_rgba(37,99,235,0.25)]"
+                      ? "bg-brand-500 text-white shadow-[0_0_12px_rgba(34,197,94,0.25)]"
                       : "bg-surface-secondary border border-white/[0.08] text-ink-secondary hover:text-ink-primary hover:border-white/[0.14]"
                   }`}
                 >
@@ -341,7 +330,6 @@ export function DashboardHome({ onNavigate }: { onNavigate: (id: NavId) => void 
               ))}
             </div>
           </div>
-        </div>
       </div>
 
       {/* ── Cards de métricas ── */}
