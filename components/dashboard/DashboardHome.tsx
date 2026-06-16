@@ -126,15 +126,20 @@ export function DashboardHome({ onNavigate }: { onNavigate: (id: NavId) => void 
   const [loading, setLoading]       = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError]           = useState<string | null>(null);
-  const [datePreset, setDatePreset] = useState<DatePreset>("today");
-  const [dates, setDates]           = useState(() => getPresetDates("today"));
-  const [heroDropdown, setHeroDropdown] = useState<"bell" | "profile" | null>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
+  const [datePreset, setDatePreset]       = useState<DatePreset>("today");
+  const [dates, setDates]                 = useState(() => getPresetDates("today"));
+  const [heroDropdown, setHeroDropdown]   = useState<"bell" | "profile" | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const heroRef      = useRef<HTMLDivElement>(null);
+  const datePickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handle(e: MouseEvent) {
       if (heroRef.current && !heroRef.current.contains(e.target as Node)) {
         setHeroDropdown(null);
+      }
+      if (datePickerRef.current && !datePickerRef.current.contains(e.target as Node)) {
+        setShowDatePicker(false);
       }
     }
     document.addEventListener("mousedown", handle);
@@ -305,21 +310,79 @@ export function DashboardHome({ onNavigate }: { onNavigate: (id: NavId) => void 
 
           {/* Filtro de datas */}
           <div className="flex items-center gap-3 mt-6 flex-wrap">
-            {/* Exibição do intervalo */}
-            <div className="flex items-center gap-2.5 bg-surface-secondary border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm">
-              <Calendar size={13} className="text-ink-muted shrink-0" />
-              <span className="text-ink-primary whitespace-nowrap">{formatDateDisplay(dates.from)}</span>
-              <span className="text-ink-muted mx-0.5">-</span>
-              <span className="text-ink-primary whitespace-nowrap">{formatDateDisplay(dates.to)}</span>
+            {/* Seletor de intervalo — ícone à direita, clicável */}
+            <div ref={datePickerRef} className="relative">
+              <button
+                onClick={() => setShowDatePicker((p) => !p)}
+                className={`flex items-center gap-2.5 bg-surface-secondary border rounded-xl px-4 py-2.5 text-sm transition-all ${
+                  showDatePicker
+                    ? "border-brand-500/40 bg-white/[0.04]"
+                    : "border-white/[0.08] hover:border-white/[0.16]"
+                }`}
+              >
+                <span className="text-ink-primary whitespace-nowrap">{formatDateDisplay(dates.from)}</span>
+                <span className="text-ink-muted mx-0.5">-</span>
+                <span className="text-ink-primary whitespace-nowrap">{formatDateDisplay(dates.to)}</span>
+                <Calendar size={13} className="text-ink-muted shrink-0 ml-1" />
+              </button>
+
+              <AnimatePresence>
+                {showDatePicker && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full left-0 mt-2 z-50 bg-surface-card border border-white/[0.10] rounded-xl shadow-2xl shadow-black/60 p-4 w-64"
+                  >
+                    <div className="text-xs font-semibold text-ink-primary mb-3">Selecionar período</div>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-[11px] text-ink-muted block mb-1">Início</label>
+                        <input
+                          type="date"
+                          value={format(dates.from, "yyyy-MM-dd")}
+                          onChange={(e) => {
+                            if (!e.target.value) return;
+                            setDates((prev) => ({ ...prev, from: new Date(e.target.value + "T00:00:00") }));
+                            setDatePreset("all");
+                          }}
+                          className="w-full bg-surface-secondary border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-ink-primary focus:outline-none focus:border-brand-500/50 transition-colors [color-scheme:dark]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] text-ink-muted block mb-1">Fim</label>
+                        <input
+                          type="date"
+                          value={format(dates.to, "yyyy-MM-dd")}
+                          onChange={(e) => {
+                            if (!e.target.value) return;
+                            const d = new Date(e.target.value + "T23:59:59");
+                            setDates((prev) => ({ ...prev, to: d }));
+                            setDatePreset("all");
+                          }}
+                          className="w-full bg-surface-secondary border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-ink-primary focus:outline-none focus:border-brand-500/50 transition-colors [color-scheme:dark]"
+                        />
+                      </div>
+                      <button
+                        onClick={() => setShowDatePicker(false)}
+                        className="w-full py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-sm font-medium transition-colors mt-1"
+                      >
+                        Aplicar
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* Botões de preset */}
+            {/* Botões de preset — pill shape */}
             <div className="flex items-center gap-1.5 flex-wrap">
               {DATE_PRESETS.map(({ id, label }) => (
                 <button
                   key={id}
                   onClick={() => handlePresetChange(id)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                     datePreset === id
                       ? "bg-brand-500 text-white shadow-[0_0_12px_rgba(34,197,94,0.25)]"
                       : "bg-surface-secondary border border-white/[0.08] text-ink-secondary hover:text-ink-primary hover:border-white/[0.14]"
