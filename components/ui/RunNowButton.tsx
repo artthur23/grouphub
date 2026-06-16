@@ -16,9 +16,7 @@ export function RunNowButton({ sourceId, onSuccess }: Props) {
     setLoading(true);
     setMessage(null);
     try {
-      const res = await fetch(`/api/monitored-sources/${sourceId}/run`, {
-        method: "POST",
-      });
+      const res = await fetch(`/api/monitored-sources/${sourceId}/run`, { method: "POST" });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Falha na execução");
       const r = json.result;
@@ -38,13 +36,17 @@ export function RunNowButton({ sourceId, onSuccess }: Props) {
         onClick={handleRun}
         disabled={loading}
         title="Executar agora"
-        className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded bg-blue-100 hover:bg-blue-200 text-blue-800 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 transition-colors disabled:opacity-50"
+        className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-md bg-brand-500/10 hover:bg-brand-500/20 text-brand-500 ring-1 ring-brand-500/20 disabled:opacity-50 transition-all"
       >
-        {loading ? <Loader2 size={12} className="animate-spin" /> : <Play size={12} />}
-        {loading ? "Executando..." : "Executar agora"}
+        {loading ? (
+          <Loader2 size={11} className="animate-spin" />
+        ) : (
+          <Play size={11} />
+        )}
+        {loading ? "Executando..." : "Executar"}
       </button>
       {message && (
-        <div className="absolute left-0 top-full mt-1 z-10 whitespace-nowrap text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded shadow px-2 py-1">
+        <div className="absolute left-0 top-full mt-1.5 z-10 whitespace-nowrap text-xs bg-surface-card border border-white/[0.12] text-ink-secondary rounded-lg shadow-xl px-3 py-1.5">
           {message}
         </div>
       )}

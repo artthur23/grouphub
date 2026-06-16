@@ -4,19 +4,24 @@ import type { MonitoringStatus, RunStatus, GroupStatus } from "@/types";
 
 type Status = MonitoringStatus | RunStatus | GroupStatus;
 
-const CONFIG: Record<Status, { label: string; classes: string }> = {
-  active:   { label: "Ativo",   classes: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
-  paused:   { label: "Pausado", classes: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
-  error:    { label: "Erro",    classes: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
-  running:  { label: "Rodando", classes: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
-  success:  { label: "Sucesso", classes: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
-  invalid:  { label: "Inválido",classes: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400" },
+const CONFIG: Record<Status, { label: string; dot: string; classes: string }> = {
+  active:  { label: "Ativo",    dot: "bg-brand-500",   classes: "bg-brand-500/10 text-brand-500 ring-1 ring-brand-500/20" },
+  paused:  { label: "Pausado",  dot: "bg-yellow-500",  classes: "bg-yellow-500/10 text-yellow-400 ring-1 ring-yellow-500/20" },
+  error:   { label: "Erro",     dot: "bg-red-500",     classes: "bg-red-500/10 text-red-400 ring-1 ring-red-500/20" },
+  running: { label: "Rodando",  dot: "bg-blue-400",    classes: "bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20" },
+  success: { label: "Sucesso",  dot: "bg-brand-500",   classes: "bg-brand-500/10 text-brand-500 ring-1 ring-brand-500/20" },
+  invalid: { label: "Inválido", dot: "bg-ink-muted",   classes: "bg-white/[0.04] text-ink-muted ring-1 ring-white/[0.08]" },
 };
 
 export function StatusBadge({ status }: { status: Status }) {
-  const cfg = CONFIG[status] ?? { label: status, classes: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400" };
+  const cfg = CONFIG[status] ?? {
+    label: status,
+    dot: "bg-ink-muted",
+    classes: "bg-white/[0.04] text-ink-muted ring-1 ring-white/[0.08]",
+  };
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${cfg.classes}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${cfg.classes}`}>
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${cfg.dot}`} />
       {cfg.label}
     </span>
   );

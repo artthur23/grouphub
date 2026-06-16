@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Search, Loader2, AlertCircle, Filter, Trash2 } from "lucide-react";
+import { Search, Loader2, AlertCircle, Filter, Trash2, Users } from "lucide-react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { ExportCsvButton } from "@/components/ui/ExportCsvButton";
@@ -32,10 +32,7 @@ export function PulledGroupsTable() {
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams({
-        page: String(page),
-        per_page: String(PER_PAGE),
-      });
+      const params = new URLSearchParams({ page: String(page), per_page: String(PER_PAGE) });
       if (debouncedSearchName) params.set("list_name", debouncedSearchName);
       if (filterSource) params.set("source_type", filterSource);
       if (filterStatus) params.set("status", filterStatus);
@@ -94,30 +91,33 @@ export function PulledGroupsTable() {
 
   const totalPages = Math.ceil(total / PER_PAGE);
 
+  const inputClass =
+    "text-sm border border-white/[0.08] bg-surface-base text-ink-primary placeholder:text-ink-muted rounded-lg px-3 py-2 focus:border-brand-500/50 focus:outline-none focus:ring-1 focus:ring-brand-500/20 transition-colors w-full";
+
   return (
     <div className="space-y-4">
       {/* Filtros */}
-      <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 space-y-3">
-        <div className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-          <Filter size={14} />
+      <div className="bg-surface-secondary rounded-xl border border-white/[0.06] p-4 space-y-3">
+        <div className="flex items-center gap-2 text-xs font-medium text-ink-muted">
+          <Filter size={12} />
           Filtros
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
           <div className="relative">
-            <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none" />
             <input
               type="text"
               placeholder="Buscar por lista..."
               value={searchName}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-md focus:ring-green-500 focus:border-green-500"
+              className={`${inputClass} pl-8`}
             />
           </div>
 
           <select
             value={filterSource}
             onChange={(e) => { setFilterSource(e.target.value as SourceType | ""); applyFilter(); }}
-            className="text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-md px-3 py-2 focus:ring-green-500 focus:border-green-500"
+            className={inputClass}
           >
             <option value="">Todas as fontes</option>
             {Object.entries(SOURCE_LABELS).map(([v, l]) => (
@@ -128,7 +128,7 @@ export function PulledGroupsTable() {
           <select
             value={filterStatus}
             onChange={(e) => { setFilterStatus(e.target.value as GroupStatus | ""); applyFilter(); }}
-            className="text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-md px-3 py-2 focus:ring-green-500 focus:border-green-500"
+            className={inputClass}
           >
             <option value="">Todos os status</option>
             <option value="active">Ativo</option>
@@ -140,123 +140,126 @@ export function PulledGroupsTable() {
             type="date"
             value={filterDateFrom}
             onChange={(e) => { setFilterDateFrom(e.target.value); applyFilter(); }}
-            className="text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-md px-3 py-2 focus:ring-green-500 focus:border-green-500"
-            placeholder="De"
+            className={inputClass}
           />
 
           <input
             type="date"
             value={filterDateTo}
             onChange={(e) => { setFilterDateTo(e.target.value); applyFilter(); }}
-            className="text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-md px-3 py-2 focus:ring-green-500 focus:border-green-500"
-            placeholder="Até"
+            className={inputClass}
           />
         </div>
       </div>
 
       {/* Cabeçalho com total e export */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-ink-muted">
           {total} grupo(s) encontrado(s)
           {total > PER_PAGE && ` — página ${page} de ${totalPages}`}
         </p>
-        <ExportCsvButton
-          data={groups}
-          filename="grupos.csv"
-          onFetchAll={fetchAllForExport}
-        />
+        <ExportCsvButton data={groups} filename="grupos.csv" onFetchAll={fetchAllForExport} />
       </div>
 
-      {/* Estado de loading */}
+      {/* Loading */}
       {loading && (
-        <div className="flex items-center gap-2 py-8 justify-center text-gray-500 dark:text-gray-400">
-          <Loader2 size={18} className="animate-spin" />
-          Carregando...
+        <div className="flex items-center gap-3 py-10 justify-center text-ink-muted">
+          <Loader2 size={18} className="animate-spin text-brand-500" />
+          <span className="text-sm">Carregando...</span>
         </div>
       )}
 
       {/* Erro */}
       {error && (
-        <div className="flex items-center gap-2 py-4 text-red-600 dark:text-red-400">
-          <AlertCircle size={16} />
-          {error}
+        <div className="flex items-center gap-2 py-4 text-red-400">
+          <AlertCircle size={15} />
+          <span className="text-sm">{error}</span>
         </div>
       )}
 
       {/* Estado vazio */}
       {!loading && !error && groups.length === 0 && (
-        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-          <p className="text-lg font-medium">Nenhum grupo encontrado</p>
-          <p className="text-sm mt-1">
-            {debouncedSearchName || filterSource || filterStatus
-              ? "Tente ajustar os filtros."
-              : "Quando os monitoramentos rodarem, os grupos aparecerão aqui."}
-          </p>
+        <div className="flex flex-col items-center justify-center py-14 gap-3 text-ink-muted">
+          <Users size={32} className="opacity-20" />
+          <div className="text-center">
+            <p className="text-sm font-medium text-ink-secondary">Nenhum grupo encontrado</p>
+            <p className="text-xs mt-1">
+              {debouncedSearchName || filterSource || filterStatus
+                ? "Tente ajustar os filtros."
+                : "Quando os monitoramentos rodarem, os grupos aparecerão aqui."}
+            </p>
+          </div>
         </div>
       )}
 
       {/* Tabela */}
       {!loading && groups.length > 0 && (
-        <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
-          <table className="min-w-full text-sm divide-y divide-gray-200 dark:divide-gray-800">
-            <thead className="bg-gray-50 dark:bg-gray-800/50 text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+        <div className="overflow-x-auto rounded-xl border border-white/[0.08]">
+          <table className="min-w-full text-sm">
+            <thead className="bg-white/[0.03] border-b border-white/[0.06]">
               <tr>
-                <th className="px-4 py-3 text-left">Grupo</th>
-                <th className="px-4 py-3 text-left">Link do grupo</th>
-                <th className="px-4 py-3 text-left">Lista</th>
-                <th className="px-4 py-3 text-left">Fonte</th>
-                <th className="px-4 py-3 text-left">Hash</th>
-                <th className="px-4 py-3 text-center">Puxado em</th>
-                <th className="px-4 py-3 text-center">Status</th>
-                <th className="px-4 py-3 text-center">Ação</th>
+                {["Grupo", "Link do grupo", "Lista", "Fonte", "Hash", "Puxado em", "Status", "Ação"].map((h) => (
+                  <th
+                    key={h}
+                    className="px-4 py-3 text-left text-[11px] font-medium text-ink-muted uppercase tracking-wider whitespace-nowrap"
+                  >
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100 dark:divide-gray-800">
+            <tbody className="divide-y divide-white/[0.04]">
               {groups.map((g) => (
-                <tr key={g.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
-                  <td className="px-4 py-3 max-w-[160px] truncate text-gray-800 dark:text-gray-200" title={g.group_name ?? undefined}>
-                    {g.group_name ?? <span className="text-gray-400 dark:text-gray-600 italic">—</span>}
+                <tr key={g.id} className="hover:bg-white/[0.02] transition-colors">
+                  <td
+                    className="px-4 py-3 max-w-[160px] truncate text-ink-primary text-[13px] font-medium"
+                    title={g.group_name ?? undefined}
+                  >
+                    {g.group_name ?? <span className="text-ink-muted italic">—</span>}
                   </td>
                   <td className="px-4 py-3 max-w-xs">
                     <a
                       href={g.group_link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 dark:text-blue-400 hover:underline font-mono text-xs truncate block max-w-[220px]"
+                      className="text-brand-400 hover:text-brand-500 hover:underline font-mono text-xs truncate block max-w-[200px] transition-colors"
                       title={g.group_link}
                     >
                       {g.group_link}
                     </a>
                     {g.error_message && (
-                      <div className="text-xs text-red-500 dark:text-red-400 mt-0.5">{g.error_message}</div>
+                      <div className="text-xs text-red-400 mt-0.5">{g.error_message}</div>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{g.list_name}</td>
-                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{SOURCE_LABELS[g.source_type]}</td>
+                  <td className="px-4 py-3 text-ink-secondary text-[13px]">{g.list_name}</td>
+                  <td className="px-4 py-3 text-ink-muted text-xs">{SOURCE_LABELS[g.source_type]}</td>
                   <td className="px-4 py-3">
-                    <span className="font-mono text-xs text-gray-500 dark:text-gray-400 truncate block max-w-[100px]" title={g.group_hash}>
+                    <span
+                      className="font-mono text-xs text-ink-muted truncate block max-w-[100px]"
+                      title={g.group_hash}
+                    >
                       {g.group_hash}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-center text-xs text-gray-600 dark:text-gray-400">
+                  <td className="px-4 py-3 text-center text-xs text-ink-muted whitespace-nowrap">
                     {format(new Date(g.pulled_at), "dd/MM/yy HH:mm", { locale: ptBR })}
                   </td>
                   <td className="px-4 py-3 text-center">
                     <StatusBadge status={g.status} />
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-4 py-3">
                     <div className="inline-flex items-center gap-1.5">
                       <CopyButton text={g.group_link} />
                       <button
                         onClick={() => handleDelete(g.id)}
                         disabled={deletingId === g.id}
                         title="Excluir"
-                        className="inline-flex items-center justify-center p-1.5 rounded bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 disabled:opacity-50"
+                        className="inline-flex items-center justify-center p-1.5 rounded-md bg-red-500/10 hover:bg-red-500/20 text-red-400 ring-1 ring-red-500/20 disabled:opacity-50 transition-all"
                       >
                         {deletingId === g.id ? (
-                          <Loader2 size={12} className="animate-spin" />
+                          <Loader2 size={11} className="animate-spin" />
                         ) : (
-                          <Trash2 size={12} />
+                          <Trash2 size={11} />
                         )}
                       </button>
                     </div>
@@ -274,17 +277,17 @@ export function PulledGroupsTable() {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1.5 text-sm rounded border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40"
+            className="px-3 py-1.5 text-xs rounded-lg border border-white/[0.08] text-ink-secondary hover:bg-white/[0.04] hover:text-ink-primary disabled:opacity-40 transition-all"
           >
             Anterior
           </button>
-          <span className="text-sm text-gray-600 dark:text-gray-400">
+          <span className="text-xs text-ink-muted px-2">
             {page} / {totalPages}
           </span>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-1.5 text-sm rounded border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40"
+            className="px-3 py-1.5 text-xs rounded-lg border border-white/[0.08] text-ink-secondary hover:bg-white/[0.04] hover:text-ink-primary disabled:opacity-40 transition-all"
           >
             Próxima
           </button>

@@ -12,7 +12,7 @@ export function IntervalSelect({ value, onChange, disabled }: Props) {
       value={value}
       onChange={(e) => onChange(Number(e.target.value) as 30 | 60 | 90)}
       disabled={disabled}
-      className="block w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:ring-green-500 disabled:bg-gray-50 dark:disabled:bg-gray-900 disabled:text-gray-500"
+      className="block w-full rounded-lg border border-white/[0.08] bg-surface-secondary text-ink-primary px-3 py-2.5 text-sm focus:border-brand-500/50 focus:outline-none focus:ring-1 focus:ring-brand-500/20 disabled:opacity-50 transition-colors"
     >
       <option value={30}>A cada 30 minutos</option>
       <option value={60}>A cada 60 minutos</option>

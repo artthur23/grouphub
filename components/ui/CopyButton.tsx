@@ -16,9 +16,13 @@ export function CopyButton({ text }: { text: string }) {
     <button
       onClick={handleCopy}
       title="Copiar link"
-      className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors"
+      className="inline-flex items-center gap-1 px-2 py-1.5 text-xs rounded-md bg-white/[0.04] hover:bg-white/[0.08] text-ink-secondary hover:text-ink-primary ring-1 ring-white/[0.06] transition-all"
     >
-      {copied ? <Check size={12} className="text-green-600" /> : <Copy size={12} />}
+      {copied ? (
+        <Check size={11} className="text-brand-500" />
+      ) : (
+        <Copy size={11} />
+      )}
       {copied ? "Copiado" : "Copiar"}
     </button>
   );

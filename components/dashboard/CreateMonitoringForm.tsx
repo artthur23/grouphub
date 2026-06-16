@@ -19,6 +19,9 @@ interface FormState {
 
 type FeedbackType = "success" | "error" | null;
 
+const inputClass =
+  "block w-full rounded-lg border border-white/[0.08] bg-surface-secondary text-ink-primary px-3 py-2.5 text-sm placeholder:text-ink-muted focus:border-brand-500/50 focus:outline-none focus:ring-1 focus:ring-brand-500/20 disabled:opacity-50 transition-colors";
+
 export function CreateMonitoringForm({ onSuccess }: Props) {
   const [form, setForm] = useState<FormState>({
     source_url: "",
@@ -68,19 +71,26 @@ export function CreateMonitoringForm({ onSuccess }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      <div>
+        <h2 className="text-base font-semibold text-ink-primary">Novo Monitoramento</h2>
+        <p className="text-xs text-ink-muted mt-0.5">
+          Adicione um link de origem para monitorar automaticamente novos grupos.
+        </p>
+      </div>
+
       {/* Feedback */}
       {feedback && (
         <div
           className={`flex items-start gap-3 rounded-lg px-4 py-3 text-sm ${
             feedback.type === "success"
-              ? "bg-green-50 border border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400"
-              : "bg-red-50 border border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400"
+              ? "bg-brand-500/10 border border-brand-500/20 text-brand-400"
+              : "bg-red-500/10 border border-red-500/20 text-red-400"
           }`}
         >
           {feedback.type === "success" ? (
-            <CheckCircle size={16} className="mt-0.5 shrink-0" />
+            <CheckCircle size={15} className="mt-0.5 shrink-0" />
           ) : (
-            <XCircle size={16} className="mt-0.5 shrink-0" />
+            <XCircle size={15} className="mt-0.5 shrink-0" />
           )}
           {feedback.message}
         </div>
@@ -88,8 +98,8 @@ export function CreateMonitoringForm({ onSuccess }: Props) {
 
       {/* Link de origem */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Link de origem <span className="text-red-500">*</span>
+        <label className="block text-xs font-medium text-ink-secondary mb-1.5">
+          Link de origem <span className="text-red-400">*</span>
         </label>
         <input
           type="text"
@@ -98,14 +108,14 @@ export function CreateMonitoringForm({ onSuccess }: Props) {
           placeholder="https://sendflow.com/exemplo/lista123"
           required
           disabled={loading}
-          className="block w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 disabled:bg-gray-50 dark:disabled:bg-gray-900 placeholder:text-gray-400 dark:placeholder:text-gray-500"
+          className={inputClass}
         />
       </div>
 
-      {/* Nome da lista/campanha */}
+      {/* Nome da lista */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Nome da lista / campanha <span className="text-red-500">*</span>
+        <label className="block text-xs font-medium text-ink-secondary mb-1.5">
+          Nome da lista / campanha <span className="text-red-400">*</span>
         </label>
         <input
           type="text"
@@ -114,15 +124,14 @@ export function CreateMonitoringForm({ onSuccess }: Props) {
           placeholder="Leads-SEMANADOCROCHE"
           required
           disabled={loading}
-          className="block w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 disabled:bg-gray-50 dark:disabled:bg-gray-900 placeholder:text-gray-400 dark:placeholder:text-gray-500"
+          className={inputClass}
         />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Fonte */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Fonte <span className="text-red-500">*</span>
+          <label className="block text-xs font-medium text-ink-secondary mb-1.5">
+            Fonte <span className="text-red-400">*</span>
           </label>
           <SourceTypeSelect
             value={form.source_type}
@@ -130,11 +139,9 @@ export function CreateMonitoringForm({ onSuccess }: Props) {
             disabled={loading}
           />
         </div>
-
-        {/* Frequência */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Frequência de consulta <span className="text-red-500">*</span>
+          <label className="block text-xs font-medium text-ink-secondary mb-1.5">
+            Frequência de consulta <span className="text-red-400">*</span>
           </label>
           <IntervalSelect
             value={form.interval_minutes}
@@ -147,16 +154,16 @@ export function CreateMonitoringForm({ onSuccess }: Props) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-md bg-green-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+        className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 hover:bg-brand-600 px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-[0_0_16px_rgba(34,197,94,0.2)]"
       >
         {loading ? (
           <>
-            <Loader2 size={16} className="animate-spin" />
+            <Loader2 size={15} className="animate-spin" />
             Salvando e buscando...
           </>
         ) : (
           <>
-            <PlusCircle size={16} />
+            <PlusCircle size={15} />
             Salvar e puxar agora
           </>
         )}

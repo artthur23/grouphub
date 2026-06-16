@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "GroupHub — Monitor de grupos WhatsApp",
@@ -8,8 +14,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
-      <body className="font-sans">{children}</body>
+    <html lang="pt-BR" className="dark" suppressHydrationWarning>
+      <body className={`${inter.className} antialiased`}>{children}</body>
     </html>
   );
 }
