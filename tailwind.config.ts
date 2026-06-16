@@ -18,10 +18,11 @@ const config: Config = {
           neon: "#00E676",
         },
         surface: {
-          base:      "#111115",
-          card:      "#1A1A1F",
-          secondary: "#1E1E25",
-          hover:     "#232329",
+          base:      "#0A0A0E",
+          sidebar:   "#0D0D11",
+          card:      "#111115",
+          secondary: "#161619",
+          hover:     "#1A1A1F",
         },
         ink: {
           primary:   "#F8FAFC",

@@ -29,7 +29,7 @@ interface Props {
 export function Sidebar({ selected, onSelect, collapsed, onToggle }: Props) {
   return (
     <aside
-      className={`relative flex flex-col bg-surface-card border-r border-white/[0.08] transition-all duration-300 ease-in-out shrink-0 ${
+      className={`relative flex flex-col bg-surface-sidebar border-r border-white/[0.08] transition-all duration-300 ease-in-out shrink-0 ${
         collapsed ? "w-[60px]" : "w-[220px]"
       }`}
     >
